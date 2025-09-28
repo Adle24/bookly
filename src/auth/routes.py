@@ -20,7 +20,8 @@ REFRESH_TOKEN_EXPIRY = 2
     "/signup", response_model=UserModel, status_code=status.HTTP_201_CREATED
 )
 async def create_user_account(
-    user_data: UserCreateModel, session: AsyncSession = Depends(get_session)
+    user_data: UserCreateModel,
+    session: AsyncSession = Depends(get_session),
 ):
     email = user_data.email
     user_exists = await user_service.user_exists(email, session)
