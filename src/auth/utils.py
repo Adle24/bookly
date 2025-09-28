@@ -21,12 +21,11 @@ def verify_password_hash(password: str, hashed_password: str) -> bool:
 
 def create_access_token(
     user_data: dict, expiry: timedelta = None, refresh: bool = False
-):
+) -> str:
     payload = {
         "user": user_data,
-        "exp": datetime.now() + expiry
-        if expiry is not None
-        else timedelta(seconds=ACCESS_TOKEN_EXPIRY),
+        "exp": datetime.now()
+        + (expiry if expiry is not None else timedelta(minutes=60)),
         "jti": str(uuid.uuid4()),
         "refresh": refresh,
     }
@@ -34,6 +33,7 @@ def create_access_token(
     token = jwt.encode(
         payload=payload, key=Config.JWT_SECRET, algorithm=Config.JWT_ALGORITHM
     )
+
     return token
 
 
