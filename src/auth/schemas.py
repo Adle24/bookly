@@ -4,6 +4,8 @@ from datetime import datetime
 from pydantic import BaseModel
 from sqlmodel import Field
 
+from src.books.schemas import BookCreateModel
+
 
 class UserCreateModel(BaseModel):
     firstname: str = Field(max_length=25)
@@ -23,6 +25,7 @@ class UserModel(BaseModel):
     is_verified: bool
     created_at: datetime
     updated_at: datetime
+    books: list[BookCreateModel]
 
 
 class UserLoginModel(BaseModel):
