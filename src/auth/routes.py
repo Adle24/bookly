@@ -5,7 +5,7 @@ from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from src.auth.dependencies import RefreshTokenBearer, get_current_user
+from src.auth.dependencies import RefreshTokenBearer, RoleChecker, get_current_user
 from src.auth.schemas import UserCreateModel, UserLoginModel, UserModel
 from src.auth.service import UserService
 from src.auth.utils import create_access_token, verify_password_hash
@@ -13,6 +13,7 @@ from src.db.main import get_session
 
 auth_router = APIRouter()
 user_service = UserService()
+role_checker = RoleChecker(["user"])
 
 REFRESH_TOKEN_EXPIRY = 2
 
@@ -50,7 +51,11 @@ async def login_user(
 
         if password_valid:
             access_token = create_access_token(
-                user_data={"email": user.email, "user_uid": str(user.uid)}
+                user_data={
+                    "email": user.email,
+                    "user_uid": str(user.uid),
+                    "role": user.role,
+                }
             )
 
             refresh_token = create_access_token(
@@ -88,5 +93,7 @@ async def refresh_token(token_details: dict = Depends(RefreshTokenBearer())):
 
 
 @auth_router.get("/me")
-async def get_current_user(user=Depends(get_current_user)):
+async def get_current_user(
+    user=Depends(get_current_user), _: bool = Depends(role_checker)
+):
     return user

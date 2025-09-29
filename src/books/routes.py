@@ -2,13 +2,14 @@ from fastapi import APIRouter, Depends, status
 from fastapi.exceptions import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from src.auth.dependencies import AccessTokenBearer
+from src.auth.dependencies import AccessTokenBearer, RoleChecker
 from src.books.schemas import Book, BookCreateModel, BookUpdateModel
 from src.books.service import BookService
 from src.db.main import get_session
 
 book_router = APIRouter()
 book_service = BookService()
+role_checker = RoleChecker(["user"])
 access_token_bearer = AccessTokenBearer()
 
 
@@ -16,6 +17,7 @@ access_token_bearer = AccessTokenBearer()
 async def get_books(
     session: AsyncSession = Depends(get_session),
     user_details=Depends(access_token_bearer),
+    _: bool = Depends(role_checker),
 ):
     books = await book_service.get_all_books(session)
     return books
@@ -28,6 +30,7 @@ async def create_book(
         get_session,
     ),
     user_details=Depends(access_token_bearer),
+    _: bool = Depends(role_checker),
 ):
     new_book = await book_service.create_book(book_data, session)
     return new_book
@@ -38,6 +41,7 @@ async def get_book(
     book_id: str,
     session: AsyncSession = Depends(get_session),
     user_details=Depends(access_token_bearer),
+    _: bool = Depends(role_checker),
 ):
     book = await book_service.get_book(book_id, session)
 
@@ -55,6 +59,7 @@ async def update_book(
     book_update_data: BookUpdateModel,
     session: AsyncSession = Depends(get_session),
     user_details=Depends(access_token_bearer),
+    _: bool = Depends(role_checker),
 ):
     updated_book = await book_service.update_book(book_id, book_update_data, session)
     if updated_book:
@@ -70,6 +75,7 @@ async def delete_book(
     book_id: str,
     session: AsyncSession = Depends(get_session),
     user_details=Depends(access_token_bearer),
+    _: bool = Depends(role_checker),
 ):
     book_to_delete = await book_service.delete_book(book_id, session)
 
