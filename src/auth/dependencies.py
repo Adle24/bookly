@@ -4,10 +4,10 @@ from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from src.auth.models import User
 from src.auth.service import UserService
 from src.auth.utils import decode_token
 from src.db.main import get_session
+from src.db.models import User
 
 user_service = UserService()
 
