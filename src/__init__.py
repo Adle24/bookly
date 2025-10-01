@@ -6,6 +6,7 @@ from src.auth.routes import auth_router
 from src.books.routes import book_router
 from src.db.main import init_db
 from src.errors import register_error_handlers
+from src.middleware import register_middleware
 from src.reviews.routes import review_router
 
 
@@ -22,7 +23,8 @@ app = FastAPI(
     description="Bookly REST API for book review web service",
 )
 
-register_error_handlers(app)  # add this line
+register_error_handlers(app)
+register_middleware(app)
 
 app.include_router(book_router, prefix=f"/api/{version}/books", tags=["books"])
 app.include_router(auth_router, prefix=f"/api/{version}/auth", tags=["auth"])
