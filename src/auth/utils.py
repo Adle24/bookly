@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 import jwt
 from fastapi import HTTPException
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from passlib.context import CryptContext
 
 from src.config import Config

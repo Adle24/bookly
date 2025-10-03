@@ -77,6 +77,12 @@ class UserNotFound(BooklyException):
     pass
 
 
+class AccountNotVerified(BooklyException):
+    """Account Not Verified"""
+
+    pass
+
+
 def create_exception_handler(status_code: int, initial_detail: Any):
     async def exception_handler(request: Request, exc: BooklyException) -> JSONResponse:
         return JSONResponse(content=initial_detail, status_code=status_code)
@@ -206,6 +212,17 @@ def register_error_handlers(app: FastAPI):
             initial_detail={
                 "message": "Book Not Found",
                 "error_code": "book_not_found",
+            },
+        ),
+    )
+
+    app.add_exception_handler(
+        AccountNotVerified,
+        create_exception_handler(
+            status_code=status.HTTP_403_FORBIDDEN,
+            initial_detail={
+                "message": "Account Not Verified",
+                "error_code": "account_not_verified",
             },
         ),
     )
